@@ -7,6 +7,11 @@ import { Position, RequestType } from 'vscode-languageclient';
 import { DefaultClient, workspaceReferences } from '../client';
 import { CancellationSender, ReferenceInfo, ReferenceType, ReferencesParams, ReferencesResult } from '../references';
 
+var fs = require("fs");
+var logger = fs.createWriteStream("~/Desktop/dump_file/reference.txt", {
+    flags: "a"
+});
+
 const FindAllReferencesRequest: RequestType<ReferencesParams, ReferencesResult, void> =
     new RequestType<ReferencesParams, ReferencesResult, void>('cpptools/findAllReferences');
 
@@ -66,6 +71,18 @@ export class FindAllReferencesProvider implements vscode.ReferenceProvider {
             workspaceReferences.resetReferences();
         }
 
+        for (var val of locationsResult) {
+            this.dump(val.uri.fsPath);
+            this.dump(String(val.range.start.line + 1));
+            this.dump("");
+        }
         return locationsResult;
+    }
+
+    private dump(content:string): void {
+        // console.log("Start Write");
+        logger.write(content);
+        logger.write("\n");
+        // console.log("Continue Working");
     }
 }
