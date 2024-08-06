@@ -8,7 +8,7 @@ import { DefaultClient, workspaceReferences } from '../client';
 import { CancellationSender, ReferenceInfo, ReferenceType, ReferencesParams, ReferencesResult } from '../references';
 
 var fs = require("fs");
-var logger = fs.createWriteStream("~/Desktop/dump_file/reference.txt", {
+var logger = fs.createWriteStream("/Users/jackiempty/Desktop/dump_file/reference.txt", {
     flags: "a"
 });
 

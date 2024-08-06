@@ -12,11 +12,11 @@ import { makeVscodeRange } from '../utils';
 
 // log file
 var fs = require("fs");
-var logger = fs.createWriteStream("~/Desktop/dump_file/hierarchy.txt", {
+var logger = fs.createWriteStream("/Users/jackiempty/Desktop/dump_file/hierarchy.txt", {
     flags: "a"
 });
 
-var call_in = fs.createWriteStream("~/Desktop/dump_file/call_in.txt", {
+var call_in = fs.createWriteStream("/Users/jackiempty/Desktop/dump_file/call_in.txt", {
     flags: "a"
 });
 
@@ -122,6 +122,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
     public async prepareCallHierarchy(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.CallHierarchyItem | undefined> {
         await this.client.ready;
         console.log("Writing hierarchy....");
+        this.counter = 0;
         workspaceReferences.cancelCurrentReferenceRequest(CancellationSender.NewRequest);
         workspaceReferences.clearViews();
 
@@ -171,11 +172,14 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
     public async provideCallHierarchyIncomingCalls(item: vscode.CallHierarchyItem, token: vscode.CancellationToken):
     Promise<vscode.CallHierarchyIncomingCall[] | undefined> {
         await this.client.ready;
+        console.log(item.name, "been here");
+        this.counter = 0;
         workspaceReferences.cancelCurrentReferenceRequest(CancellationSender.NewRequest);
         
         const CallHierarchyCallsToEvent: string = "CallHierarchyCallsTo";
         if (item === undefined) {
             this.logTelemetry(CallHierarchyCallsToEvent, CallHierarchyRequestStatus.Failed);
+            console.log("undefined_1");
             return undefined;
         }
         
@@ -186,21 +190,24 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
         const cancellationTokenListener: vscode.Disposable = token.onCancellationRequested(() => {
             requestCanceled = CancellationSender.ProviderToken;
             cancelSource.cancel();
+            console.log("canceled_1");
         });
+        console.log("been here_1");
         const requestCanceledListener: vscode.Disposable = workspaceReferences.onCancellationRequested(sender => {
             requestCanceled = sender;
-            cancelSource.cancel();
+            // cancelSource.cancel();
+            console.log("canceled_2");
         });
-        
+        console.log("been here_2");
         // Send the request to the language server.
         let result: vscode.CallHierarchyIncomingCall[] | undefined;
         const params: CallHierarchyParams = {
             textDocument: { uri: item.uri.toString() },
             position: Position.create(item.selectionRange.start.line, item.selectionRange.start.character)
         };
-        
+        console.log("been here_3");
         const response: CallHierarchyCallsItemResult = await this.client.languageClient.sendRequest(CallHierarchyCallsToRequest, params, cancelSource.token);
-        
+        console.log("been here_4______________");
 
         // Reset anything that can be cleared before processing the result.
         const progressBarDuration: number | undefined = workspaceReferences.getCallHierarchyProgressBarDuration();
@@ -210,24 +217,26 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
         requestCanceledListener.dispose();
         console.log("Test_1");
         // Process the result.
+        // if (cancelSource.token.isCancellationRequested || response.calls === undefined /*|| requestCanceled !== undefined*/) {
         if (cancelSource.token.isCancellationRequested || response.calls === undefined || requestCanceled !== undefined) {
             const requestStatus: CallHierarchyRequestStatus = requestCanceled === CancellationSender.User ?
                 CallHierarchyRequestStatus.CanceledByUser : CallHierarchyRequestStatus.Canceled;
             this.logTelemetry(CallHierarchyCallsToEvent, requestStatus, progressBarDuration);
             console.log("Test_2");
-            console.log(item.name);
+            console.log(item.name, item.uri.fsPath);
             console.log(cancelSource.token.isCancellationRequested);
             console.log(response.calls === undefined);
             console.log(requestCanceled !== undefined);
             throw new vscode.CancellationError();
         } else if (response.calls.length !== 0) {
             console.log("Test_3");
-            result = this.createIncomingCalls(response.calls, token); // here !!!!, reponses.call is a array, maybe can do recurrsive move
+            console.log(item.name, item.uri.fsPath);
+            result = await this.createIncomingCalls(response.calls, token); // here !!!!, reponses.call is a array, maybe can do recurrsive move
             console.log("Test_4");
         }
         console.log("Test_5");
         this.logTelemetry(CallHierarchyCallsToEvent, CallHierarchyRequestStatus.Succeeded, progressBarDuration);
-        console.log("dump_income....");
+        console.log("dump_income-----------------------------------------------------------------------------");
         return result;
     }
 
@@ -240,6 +249,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
         }
 
         await this.client.ready;
+        this.counter = 0;
 
         let result: vscode.CallHierarchyOutgoingCall[] | undefined;
         const params: CallHierarchyParams = {
@@ -275,7 +285,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
         const fileDetail: string = dirPath.length === 0 ?
             `${path.basename(item.file)}` : `${path.basename(item.file)} (${dirPath})`;
         
-        console.log("dump....");
+        console.log(item.name , "dump....");
         this.dump(containerDetail + fileDetail);
         this.dump(itemUri.fsPath);
         this.dump(item.name);
@@ -291,7 +301,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
             makeVscodeRange(item.selectionRange));
     }
 
-    private createIncomingCalls(calls: CallHierarchyCallsItem[], token: vscode.CancellationToken): vscode.CallHierarchyIncomingCall[] {
+    private async createIncomingCalls(calls: CallHierarchyCallsItem[], token: vscode.CancellationToken): Promise<vscode.CallHierarchyIncomingCall[]> {
         const result: vscode.CallHierarchyIncomingCall[] = [];
         
         for (const call of calls) {
@@ -308,7 +318,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
             result.push(incomingCall);
             // console.log(String(range.start.line + 1));
             // const token: vscode.CancellationToken = 
-            this.provideCallHierarchyIncomingCalls(item, token);
+            await this.provideCallHierarchyIncomingCalls(item, token);
         }
         
         for (var val of result) {
