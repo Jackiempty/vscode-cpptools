@@ -4,7 +4,7 @@
  * ------------------------------------------------------------------------------------------ */
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { Position, Range, RequestType, TextDocumentIdentifier } from 'vscode-languageclient';
+import { integer, Position, Range, RequestType, TextDocumentIdentifier } from 'vscode-languageclient';
 import * as Telemetry from '../../telemetry';
 import { DefaultClient, workspaceReferences } from '../client';
 import { CancellationSender } from '../references';
@@ -117,6 +117,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
     }
 
     private counter: number = 0;
+    private layers: number = 0;
 
 
     public async prepareCallHierarchy(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.CallHierarchyItem | undefined> {
@@ -286,11 +287,11 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
             `${path.basename(item.file)}` : `${path.basename(item.file)} (${dirPath})`;
 
         console.log(item.name, "dump....");
-        this.dump(item.name);
-        this.dump(containerDetail + fileDetail);
+        this.dump(item.name, this.layers);
+        this.dump(containerDetail + fileDetail, this.layers);
         // this.dump(itemUri.fsPath);
-        this.dump(String(item.range.start.line + 1));
-        this.dump(" ");
+        this.dump(String(item.range.start.line + 1), this.layers);
+        this.dump(" ", this.layers);
         // 目前問題：如何排版，縮排在輸出的檔案
 
         return new vscode.CallHierarchyItem(
@@ -306,6 +307,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
         const result: vscode.CallHierarchyIncomingCall[] = [];
 
         for (const call of calls) {
+            this.layers++;
             const item: vscode.CallHierarchyItem = this.makeVscodeCallHierarchyItem(call.item);
             const ranges: vscode.Range[] = [];
             // const range: vscode.Range = makeVscodeRange(call.fromRanges[0]);
@@ -320,6 +322,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
             // console.log(String(range.start.line + 1));
             // const token: vscode.CancellationToken = 
             await this.provideCallHierarchyIncomingCalls(item, token);
+            this.layers--;
         }
 
         for (var val of result) {
@@ -383,7 +386,15 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
         this.isEntryRootNodeTelemetry = false;
     }
 
-    private dump(content: string): void {
+    // private dump(content: string): void {
+    //     logger.write(content);
+    //     logger.write("\n");
+    // }
+
+    private dump(content: string, layer: integer): void {
+        for (let i = 0; i < layer; i++) {
+            logger.write("    ");
+        }
         logger.write(content);
         logger.write("\n");
     }
