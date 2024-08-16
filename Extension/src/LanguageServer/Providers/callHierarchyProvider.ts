@@ -12,11 +12,11 @@ import { makeVscodeRange } from '../utils';
 
 // log file
 var fs = require("fs");
-var logger = fs.createWriteStream("/Users/jackiempty/Desktop/dump_file/hierarchy.txt", {
+var logger = fs.createWriteStream("../../../dump_file/hierarchy.txt", {
     flags: "a"
 });
 
-var call_in = fs.createWriteStream("/Users/jackiempty/Desktop/dump_file/call_in.txt", {
+var call_in = fs.createWriteStream("../../../dump_file/call_in.txt", {
     flags: "a"
 });
 
