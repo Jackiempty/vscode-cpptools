@@ -71,6 +71,8 @@ export class FindAllReferencesProvider implements vscode.ReferenceProvider {
             workspaceReferences.resetReferences();
         }
 
+        this.dump("variable/function: " + response.text)
+        this.dump("")
         for (var val of locationsResult) {
             this.dump(val.uri.fsPath);
             this.dump(String(val.range.start.line + 1));
