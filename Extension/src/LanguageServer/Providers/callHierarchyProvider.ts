@@ -291,7 +291,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
         this.dump(containerDetail + fileDetail, this.layers);
         // this.dump(itemUri.fsPath);
         this.dump(String(item.range.start.line + 1), this.layers);
-        this.dump(" ", this.layers);
+        this.dump("", this.layers);
         // 目前問題：如何排版，縮排在輸出的檔案
 
         return new vscode.CallHierarchyItem(
