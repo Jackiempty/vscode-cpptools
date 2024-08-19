@@ -57,14 +57,21 @@ $ npm install -g <package_name>
 # 後端處理
 在查找結束後，會在 `./dump_file/` 底下找到 `hierarchy.txt` 或 `reference.txt`，這時裡面會有像圖片裡這樣的文字  
 
-![alt text](image.png)
+![alt text](readme_image/image-2.png)
 > hierarchy.txt 裡面的樣子
 
 從文字的排版方式可以看出每個函式之間的階層上下關係，透過縮排區分，但光這樣還是需要自己人工去過濾掉重複的函式，因此這個形式的資料還不夠精練  
 
-![alt text](image-1.png)
+![alt text](readme_image/image-3.png)
 > reference.txt 裡面的樣子，包含的資訊有：  
 > 第一行：函式/變數名稱，所在檔案路徑以及名稱，函式所在行數
 
 ## 使用 read.py 讀取並解析 hierarchy.txt
-為了解析 hierarchy.txt 裡面的 raw data，我寫了一個小工具可以將裡面的內容可視化，讓使用者可以一目瞭然所有函式之間的呼叫/被呼叫關係，
+為了解析 hierarchy.txt 裡面的 raw data，我寫了一個小工具可以將裡面的內容可視化，讓使用者可以一目瞭然所有函式之間的呼叫/被呼叫關係，目前能夠看到的資訊是函式名稱以及彼此之間的呼叫/被呼叫關係，由於在程式裡面是有將檔案位置和行數都作為物件屬性儲存起來的，所以若是有想要在上面也加上這些資訊的話也是可以的，但目前為了版面整潔著想，並沒有那麼做。  
+
+![alt text](readme_image/image-4.png)  
+> 這裡可以更改你想要畫圖的檔案路徑 + 名稱，但如果你不先到 CallHierarchyProvider.ts 裡面去改輸出的檔案路徑 + 名稱的話，他預設就會是這個樣子，正常情況不會去動到
+
+**畫出來的樣子**  
+
+![alt text](readme_image/image-5.png)
