@@ -15,6 +15,8 @@ Extension 所運行的平台，也是很好用的編輯器，而且開源
 Javascript package manager, the equivalent of pip of Python as to Javascript
 * Git：  
 版控系統，主要是改好的版本我放在 [Github](https://github.com/Jackiempty/vscode-cpptools.git)，以便管理以及做不同版本間的程式比對
+* Graphviz:  
+圖像化工具，可以將`txt`檔之中的函示階層關係透過專屬語法描述之後視覺化，幫助更直觀的了解
 
 # 下載專案
 點選 Download ZIP，當然如果你有安裝 Git 也可以用 clone repository 的方式  
@@ -41,7 +43,7 @@ $ npm install -g yarn
 $ npm install -g <package_name>
 ```
 
-![alt text](readme_image/image-1.png)
+![alt text](readme_image/image-1.png)  
 
 6. 重複`4, 5`兩個步驟直到成功建置為止
 7. 有時在 console 會問你要不要授權裝什麼，打 yes + enter 就可以了
@@ -55,14 +57,14 @@ $ npm install -g <package_name>
 6. 當右下角的圈圈沒有再轉就代表已經找完了
 
 # 後端處理
-在查找結束後，會在 `./dump_file/` 底下找到 `hierarchy.txt` 或 `reference.txt`，這時裡面會有像圖片裡這樣的文字  
+在查找結束後，會在 `Extension/dump_file/` 底下找到 `hierarchy.txt` 或 `reference.txt`，這時裡面會有像圖片裡這樣的文字  
 
-![alt text](readme_image/image-2.png)
+![alt text](readme_image/image-2.png)  
 > hierarchy.txt 裡面的樣子
 
 從文字的排版方式可以看出每個函式之間的階層上下關係，透過縮排區分，但光這樣還是需要自己人工去過濾掉重複的函式，因此這個形式的資料還不夠精練  
 
-![alt text](readme_image/image-3.png)
+![alt text](readme_image/image-3.png)  
 > reference.txt 裡面的樣子，包含的資訊有：  
 > 第一行：函式/變數名稱，所在檔案路徑以及名稱，函式所在行數
 
@@ -72,8 +74,12 @@ $ npm install -g <package_name>
 ![alt text](readme_image/image-4.png)  
 > 這裡可以更改你想要畫圖的檔案路徑 + 名稱，但如果你不先到 CallHierarchyProvider.ts 裡面去改輸出的檔案路徑 + 名稱的話，他預設就會是這個樣子，正常情況不會去動到  
 
-**畫出來的樣子**  
+```shell
+$ python3 read.py
+```
+在執行完這行命令後，`Extension/dump_file/`會再跑出兩個檔案，分別是`*.gv`和`*.pdf`，前者的內容是透過`Graphviz`套件將在`python`程式中描述好的函式之間的關係自動生成透過專屬語法描述的文字檔，而後者是該文字檔圖像化後所生成的 PDF 檔，供使用者存取  
+## 畫出來的樣子  
 
-![alt text](readme_image/image-5.png)
+![alt text](readme_image/image-5.png)  
 
 目前能夠看到的資訊是函式名稱以及彼此之間的呼叫/被呼叫關係，由於在程式裡面是有將檔案位置和行數都作為物件屬性儲存起來的，所以若是有想要在上面也加上這些資訊的話也是可以的，但目前為了版面整潔著想，並沒有那麼做。  
