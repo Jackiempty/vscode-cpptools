@@ -12,11 +12,13 @@ import { makeVscodeRange } from '../utils';
 
 // log file
 var fs = require("fs");
-var logger = fs.createWriteStream("../../../dump_file/hierarchy.txt", {
+var Path1 = __dirname + "/../../../../dump_file/hierarchy.txt"
+var Path2 = __dirname + "/../../../../dump_file/reference.txt"
+var logger = fs.createWriteStream(Path1, {
     flags: "a"
 });
 
-var call_in = fs.createWriteStream("../../../dump_file/call_in.txt", {
+var call_in = fs.createWriteStream(Path2, {
     flags: "a"
 });
 
@@ -123,6 +125,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
     public async prepareCallHierarchy(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.CallHierarchyItem | undefined> {
         await this.client.ready;
         console.log("Writing hierarchy....");
+        console.log('__dirname:', Path1);
         this.counter = 0;
         workspaceReferences.cancelCurrentReferenceRequest(CancellationSender.NewRequest);
         workspaceReferences.clearViews();
