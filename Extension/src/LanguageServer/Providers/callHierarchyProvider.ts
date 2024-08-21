@@ -238,14 +238,13 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
         console.log("Test_1");
         // Process the result.
         // if (cancelSource.token.isCancellationRequested || response.calls === undefined /*|| requestCanceled !== undefined*/) {
-        if (cancelSource.token.isCancellationRequested || response.calls === undefined || requestCanceled !== undefined) {
+        if (cancelSource.token.isCancellationRequested || cancelled || requestCanceled !== undefined) {
             const requestStatus: CallHierarchyRequestStatus = requestCanceled === CancellationSender.User ?
                 CallHierarchyRequestStatus.CanceledByUser : CallHierarchyRequestStatus.Canceled;
             this.logTelemetry(CallHierarchyCallsToEvent, requestStatus, progressBarDuration);
             console.log("Test_2");
             console.log(item.name, item.uri.fsPath);
             console.log(cancelSource.token.isCancellationRequested);
-            console.log(response.calls === undefined);
             console.log(requestCanceled !== undefined);
             throw new vscode.CancellationError();
         } else if (response && response.calls.length !== 0) {
@@ -418,7 +417,7 @@ export class CallHierarchyProvider implements vscode.CallHierarchyProvider {
     //     logger.write("\n");
     // }
 
-    private dump(content: string, layer: integer): void {
+    private dump(content: string, layer: number): void {
         for (let i = 0; i < layer; i++) {
             logger.write("    ");
         }

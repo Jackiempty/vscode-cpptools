@@ -78,17 +78,18 @@ export class FindAllReferencesProvider implements vscode.ReferenceProvider {
             // Display other reference types in panel or channel view.
             // Note: ReferencesManager.resetReferences is called in ReferencesManager.showResultsInPanelView
             workspaceReferences.showResultsInPanelView(response);
+            this.dump("variable/function: " + response.text)
+            this.dump("")
+            for (var val of locationsResult) {
+                this.dump(val.uri.fsPath);
+                this.dump(String(val.range.start.line + 1));
+                this.dump("");
+            }
         } else {
             workspaceReferences.resetReferences();
         }
 
-        this.dump("variable/function: " + response.text)
-        this.dump("")
-        for (var val of locationsResult) {
-            this.dump(val.uri.fsPath);
-            this.dump(String(val.range.start.line + 1));
-            this.dump("");
-        }
+        
         return locationsResult;
     }
 
