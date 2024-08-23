@@ -14,7 +14,7 @@ def assign():
 
 
 def plot():
-    dot.render('.dump_file/round-table.gv', view=True)
+    dot.render('./dump_file/round-table.gv', view=True)
 
 # ------------ example -----------------
 # names = ['剪刀', '石頭', '布']

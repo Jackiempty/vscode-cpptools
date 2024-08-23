@@ -99,20 +99,20 @@ for i in file:
             layer+=1
         elif len(i) < layer:
             layer = len(i)
-            if layer > 0:
-                del stack[layer:]
+            del stack[layer:]
             stack[layer-1]=funcs[get_index(func(Name, File, Line), funcs)]
-            funcs[get_index(func(Name, File, Line), funcs)].add_super(stack[layer - 2])
-            stack[layer - 2].add_infer(funcs[get_index(func(Name, File, Line), funcs)])
+            if len(stack) >= 2:
+                funcs[get_index(func(Name, File, Line), funcs)].add_super(stack[layer - 2])
+                stack[layer - 2].add_infer(funcs[get_index(func(Name, File, Line), funcs)])
 
         elif len(i) == layer:
             stack[layer-1]=funcs[get_index(func(Name, File, Line), funcs)]
             funcs[get_index(func(Name, File, Line), funcs)].add_super(stack[layer - 2])
             stack[layer - 2].add_infer(funcs[get_index(func(Name, File, Line), funcs)])
-        # print("[", end="")
-        # for i in stack:
-        #     print(i.name.replace("\n",""), end=" ")
-        # print("]")
+        print("[", end="")
+        for i in stack:
+            print(i.name.replace("\n",""), end=" ")
+        print("]")
     counter+=1
 
 

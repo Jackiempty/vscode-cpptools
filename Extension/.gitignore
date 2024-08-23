@@ -36,3 +36,4 @@ src/nativeStrings.ts
 vscode*.d.ts
 .scripts/_*
 dump_file/*
+__pycache__
